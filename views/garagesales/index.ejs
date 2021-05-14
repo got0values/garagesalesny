@@ -1,0 +1,24 @@
+<% layout('layouts/boilerplate') %>
+        <h1>Garage Sales</h1>
+        <div>
+            <a href="/garagesales/new">Add Garage Sale</a>
+        </div>
+        <% for (let garagesale of garagesales) { %>
+            <div class="card mb-3">
+                <div class="row">
+                    <% if (garagesale.images[0]) { %>
+                    <div class="col-md-4">
+                        <img class="img-fluid" src="<%= garagesale.images[0].url %>">
+                    </div>
+                    <% } %>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= garagesale.title %></h5>
+                            <p class="card-text"><%= garagesale.description %></p>
+                            
+                            <a class="btn btn-primary" href="/garagesales/<%= garagesale._id %>">View <%= garagesale.title %></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>

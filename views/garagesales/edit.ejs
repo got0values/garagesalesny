@@ -1,0 +1,49 @@
+<% layout('layouts/boilerplate') %>
+
+<style>
+#indImages {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+</style>
+
+<div class="row">
+    <h1 class="text-center">Edit Garage Sale</h1>
+    <div class="col-md-6 offset-md-3">
+        <form action="/garagesales/<%=garagesale._id%>?_method=PUT" method="post" novalidate class="validated-form">
+            <div class="mb-3">
+                <label class="form-label" for="title">Title</label>
+                <input class="form-control" type="text" id="title" name="title" value="<%= garagesale.title %>" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="location">Location</label>
+                <input class="form-control" type="text" id="location" name="location" value="<%= garagesale.location %>" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+    
+            <div class="mb-3">
+                <label class="form-label" for="description">Description:</label>
+                <textarea class="form-control" type="text" id="description" name="description" required><%= garagesale.description %></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="images" class="form-label">Add Images</label>
+                <% for (let img of garagesale.images) { %>
+                <input class="form-control" type="text" name="images" id="images" value="<%= img.url %>">
+                <% } %>
+            </div>            
+            <div class="mb-3">
+                <button class="btn btn-info">Update garagesale</button>
+            </div>
+        </form>
+        <a href="/garagesales/<%= garagesale._id %>">Back to garagesale</a>
+    </div>
+</div>

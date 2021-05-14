@@ -1,0 +1,37 @@
+<% layout('layouts/boilerplate') %>
+    <div class="row">
+        <h1 class="text-center">New Garage Sale</h1>
+        <div class="col-md-6 offset-md-3">
+            <form action="/garagesales" method="post">
+                <div class="mb-3">
+                    <label class="form-label" for="title">Title</label>
+                    <input class="form-control" type="text" id="title" name="title" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="location">Location</label>
+                    <input class="form-control" type="text" id="location" name="location" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="description">Description:</label>
+                    <textarea class="form-control" type="text" id="description" name="description" required></textarea>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Add Images</label>
+                    <input class="form-control" type="text" name="images" id="images" required>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-success">Add Garage Sale</button>
+                </div>
+            </form>
+            <a href="/garagesales">All Garage Sales</a>
+        </div>
+    </div>
