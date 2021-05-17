@@ -4,17 +4,25 @@ const User = require('../models/user.js');
 
 //seed garage sale
 module.exports.makegaragesale = async(req, res) => {
+    await User.deleteMany({});
+    await GarageSale.deleteMany({});
+    await Review.deleteMany({});
+    const user = new User({email: 'demo3@email.com', username: 'DEMO'});
+    const newUser = await User.register(user, 'DEMOPW');
     const review = new Review({
         body: "This is great garagesale. Just great!",
-        rating: 4
-    })
+        rating: 4,
+        author: newUser._id,
+        timestamp: new Date()        
+    });
     await review.save();
-    const user = new User({email: 'fakeemail3@email.com', username: 'DEMO3'});
-    const newUser = await User.register(user, 'DEMOPW');
     for (let i = 0; i < 20; i++) {
         const garagesale = new GarageSale({
-            title: "This is a new garage sale",
-            location: "Columbus, OH",
+            title: "Amazing Garage Sale!",
+            location: "Hicksville, NY",
+            timestamp: new Date,            
+            startdate: '2021-05-17T02:38',
+            enddate: '2021-05-20T14:38',
             author: newUser._id,
             images: [{
                 url: "https://images.unsplash.com/photo-1488841714725-bb4c32d1ac94?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1016&q=80",
@@ -44,8 +52,12 @@ module.exports.newgaragesale = async(req, res) => {
     const gs = new GarageSale({
         title: garagesale["title"],
         location: garagesale["location"],
+        timestamp: new Date(),
+        startdate: garagesale["startdate"],
+        enddate: garagesale["enddate"],
         images: images,
-        description: garagesale["description"]
+        description: garagesale["description"],
+        author: req.user._id
     });
     await gs.save();
     res.redirect(`/garagesales/${gs._id}`);
@@ -54,9 +66,7 @@ module.exports.newgaragesale = async(req, res) => {
 module.exports.showgaragesale = async(req, res) => {
     const { id } = req.params;
     //populate when referencing another collection's mongo object id
-    const garagesale = await GarageSale.findById(id).populate({
-        path:'reviews'
-    });
+    const garagesale = await GarageSale.findById(id).populate({ path:'reviews', populate: { path: 'author' } }).populate('author');
     if (!garagesale) {
         req.flash('error', 'Cannot find that garage sale');
         return res.redirect('/garagesales')

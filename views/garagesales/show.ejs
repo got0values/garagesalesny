@@ -1,5 +1,5 @@
 <% layout('layouts/boilerplate') %>
-
+<link rel="stylesheet" href="/stylesheets/stars.css">
 
 <style>
 #carImages {
@@ -34,33 +34,31 @@
         <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title"><%= garagesale.title %></h5>
-                <p class="card-text"><%= garagesale.location %></p>
                 <p class="card-text"><%= garagesale.description %></p>
             </div>
-
-            
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><%= garagesale.location %></li>                
+                <li class="list-group-item"><span id="startdate"><%= garagesale.startdate %></span> - <span id="enddate"><%= garagesale.enddate %></span></li>
+            </ul>
+            <% if( currentUser && garagesale.author.equals(currentUser._id)) {%>
                 <div class="card-body">
                     <a class="card-link btn btn-warning" href="/garagesales/<%= garagesale._id %>/edit">Edit</a>
                     <form class="d-inline" action="/garagesales/<%= garagesale._id %>?_method=DELETE" method="post">
                         <button class="btn btn-danger">Delete</button>
                     </form>
                 </div>
-            
+            <% } %>
             <div class="card-footer text-muted">
-                2 days ago
+                Submitted by <%= garagesale.author.username %> on <span id="gstimestamp"><%= garagesale.timestamp %></span>
             </div>
         </div>
     </div>
     <div class="col-6">
         <div id="map"></div>
-        
+        <% if(currentUser) { %>
         <h2>Leave a Review</h2>
         <form action="/garagesales/<%= garagesale._id %>/reviews" method="post" class="mb-3 validated-form" novalidate>
-            <div class="mb-3">
-                <label class="form-label" for="rating"></label>
-                <input class="form-range" type="range" min="1" max="5" name="rating" id="rating">
-            </div>
-            <!-- <div class="mb-3">
+            <div class="mb-0">
                 <fieldset class="starability-basic">
                     <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="1" checked aria-label="No rating." />
                     <input type="radio" id="first-rate1" name="rating" value="1" />
@@ -74,14 +72,16 @@
                     <input type="radio" id="first-rate5" name="rating" value="5" />
                     <label for="first-rate5" title="Amazing">5 stars</label>
                 </fieldset>
-            </div> -->
+            </div>
             <div id="mb-3">
                 <label for="body">Review</label>
                 <textarea class="form-control" name="body" id="body" cols="30" rows="3" required></textarea>
             </div>
             <button class="btn btn-success">Submit</button>
         </form>
-        
+        <% } else { %>
+        <p><a href="/login">Log in</a> to leave a review</p>
+        <% } %>
         <h2>Reviews</h2>
         <% for (let review of garagesale.reviews) { %>
             <div class="card mb-3">
@@ -90,13 +90,35 @@
                     <p class="starability-result" data-rating="<%= review.rating %>">
                         Rated: <%= review.rating %>
                     </p>
-
-                    <p class="card-text">Review: <%=  review.body %></p>
-                    <form action="/garagesales/<%=garagesale._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
-                        <button class="btn btn-sm btn-danger">Delete</button>
-                    </form>                        
+                    <p class="card-text">Author: <%= review.author.username %> </p>
+                    <p class="card-text" id="reviewdate"><%= review.timestamp %></p>               
+                    <p class="card-text">Review: <%= review.body %></p>
+                    <% if( currentUser && review.author.equals(currentUser._id)) {%>
+                        <form action="/garagesales/<%=garagesale._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    <% } %>  
                 </div>
             </div>
         <% } %>
     </div>
 </div>
+
+<script>
+const gstimestamp = document.querySelector("#gstimestamp");
+console.log(gstimestamp.innerText);
+const g = new Date(gstimestamp.innerText);
+gstimestamp.innerText = g.toLocaleString();
+
+const reviewdate = document.querySelector("#reviewdate");
+const d = new Date(reviewdate.innerText);
+reviewdate.innerText = d.toDateString();
+
+const startdate = document.querySelector("#startdate");
+const s = new Date(startdate.innerText);
+startdate.innerText = s.toDateString();
+
+const enddate = document.querySelector("#enddate");
+const e = new Date(enddate.innerText);
+enddate.innerText = e.toDateString();
+</script>

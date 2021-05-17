@@ -26,7 +26,18 @@
                     Looks good!
                 </div>
             </div>
-    
+            <div class="form-group row mb-3">
+                <label for="startdate" class="col-2 col-form-label">Starts:</label>
+                <div class="col-10">
+                    <input class="form-control" type="datetime-local" name="startdate"  id="startdate" value="<%= garagesale.startdate %>" required>
+                </div>
+            </div>
+            <div class="form-group row mb-3">
+                <label for="enddate" class="col-2 col-form-label">Ends:</label>
+                <div class="col-10">
+                    <input class="form-control" type="datetime-local" name="enddate" id="enddate" value="<%= garagesale.enddate %>" required>
+                </div>
+            </div>
             <div class="mb-3">
                 <label class="form-label" for="description">Description:</label>
                 <textarea class="form-control" type="text" id="description" name="description" required><%= garagesale.description %></textarea>

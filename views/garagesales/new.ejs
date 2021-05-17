@@ -17,6 +17,24 @@
                         Looks good!
                     </div>
                 </div>
+                <div class="form-group row mb-3">
+                    <label for="startdate" class="col-2 col-form-label">Starts:</label>
+                    <div class="col-10">
+                        <input class="form-control" type="datetime-local" name="startdate"  id="startdate" required>
+                    </div>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="enddate" class="col-2 col-form-label">Ends:</label>
+                    <div class="col-10">
+                        <input class="form-control" type="datetime-local" name="enddate" id="enddate" required>
+                    </div>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
                 <div class="mb-3">
                     <label class="form-label" for="description">Description:</label>
                     <textarea class="form-control" type="text" id="description" name="description" required></textarea>
@@ -26,7 +44,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="formFileMultiple" class="form-label">Add Images</label>
-                    <input class="form-control" type="text" name="images" id="images" required>
+                    <input class="form-control" type="text" name="images" id="images">
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-success">Add Garage Sale</button>
@@ -35,3 +53,8 @@
             <a href="/garagesales">All Garage Sales</a>
         </div>
     </div>
+
+<script>
+const datepicker = document.querySelector('.datepicker');
+datepicker.pickadate();
+</script>

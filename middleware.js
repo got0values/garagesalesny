@@ -1,5 +1,6 @@
 const { garagesaleSchema, reviewSchema } = require('./schemas.js')
 const AppError = require('./utils/AppError');
+const GarageSale = require('./models/garagesale')
 // const passport = require('passport');
 
 //authenticate user
@@ -12,7 +13,7 @@ module.exports.isLoggedIn = (req, res, next) => {
     next();
 }
 
-//Joi error function that campground form input goes through first
+//Joi error function that garagesale form input goes through first
 module.exports.validateGarageSale = (req, res, next) => {
     const {error} = garagesaleSchema.validate(req.body);
     if (error){
@@ -21,6 +22,17 @@ module.exports.validateGarageSale = (req, res, next) => {
     } else{
         next();
     }
+}
+
+//make sure only garagesale author can delete their own campground
+module.exports.isAuthor = async (req, res, next) => {
+    const { id } = req.params;
+    const garagesale = await GarageSale.findById(id);
+    if (!garagesale.author.equals(req.user._id)) {
+        req.flash('error', 'You do not have permission to do that!');
+        return res.redirect(`/garagesales/${id}`);
+    }
+    next();
 }
 
 //Joi error function to validate review forms

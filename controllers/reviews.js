@@ -7,7 +7,9 @@ module.exports.createReview = async(req, res) => {
     const garagesale = await GarageSale.findById(req.params.id);
     const review = new Review({
         body: req.body["body"],
-        rating: req.body["rating"]
+        rating: req.body["rating"],
+        author: req.user._id,
+        timestamp: Date.now()     
     });
     garagesale.reviews.push(review);
     await review.save();

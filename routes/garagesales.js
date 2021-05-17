@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
-const { isLoggedIn, validateGarageSale } = require('../middleware');
+const { isLoggedIn, validateGarageSale, isAuthor } = require('../middleware');
 const garagesale = require('../controllers/garagesales');
 
 //route to render garage sale index
@@ -20,12 +20,12 @@ router.get('/makegaragesale', catchAsync(garagesale.makegaragesale))
 router.get('/:id', catchAsync(garagesale.showgaragesale))
 
 //route to render the edit page for a campground
-router.get('/:id/edit', catchAsync(garagesale.showeditgaragesale))
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(garagesale.showeditgaragesale))
 
 //route to edit the particular garagesale
-router.put('/:id', isLoggedIn, catchAsync(garagesale.editgaragesale))
+router.put('/:id', isLoggedIn, isAuthor, catchAsync(garagesale.editgaragesale))
 
 //route to delete particular campground
-router.delete('/:id', isLoggedIn, catchAsync(garagesale.deletegaragesale))
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(garagesale.deletegaragesale))
 
 module.exports = router;

@@ -5,6 +5,9 @@ const Review = require('./review');
 const GarageSaleSchema = new Schema({
     title: String,
     location: String,
+    timestamp: Date,
+    startdate: Date,
+    enddate: Date,
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User'
