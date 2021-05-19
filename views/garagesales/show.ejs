@@ -37,7 +37,7 @@
                 <p class="card-text"><%= garagesale.description %></p>
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item"><%= garagesale.location %></li>                
+                <li class="list-group-item"><%= garagesale.location %></li>
                 <li class="list-group-item"><span id="startdate"><%= garagesale.startdate %></span> - <span id="enddate"><%= garagesale.enddate %></span></li>
             </ul>
             <% if( currentUser && garagesale.author.equals(currentUser._id)) {%>
@@ -106,19 +106,40 @@
 
 <script>
 const gstimestamp = document.querySelector("#gstimestamp");
-console.log(gstimestamp.innerText);
 const g = new Date(gstimestamp.innerText);
 gstimestamp.innerText = g.toLocaleString();
 
 const reviewdate = document.querySelector("#reviewdate");
-const d = new Date(reviewdate.innerText);
-reviewdate.innerText = d.toDateString();
+if (reviewdate !== null) {
+    const d = new Date(reviewdate.innerText);
+    reviewdate.innerText = d.toDateString();
+}
 
 const startdate = document.querySelector("#startdate");
-const s = new Date(startdate.innerText);
-startdate.innerText = s.toDateString();
+const sd0 = "<%= garagesale.startdate %>";
+const sd1 = sd0.split(" ");
+const sd2 = sd1[0] + ", " + sd1[1] + " " + sd1[2] + ", " + sd1[3] + ", " + sd1[4];
+startdate.innerText = sd2;
+
+// const startdate = document.querySelector("#startdate");
+// const s0 = "<%= garagesale.startdate %>";
+// console.log(s0);
+// const s = new Date(s0);
+// console.log(s);
+// // const s = new Date(startdate.innerText);
+// startdate.innerText = s.toDateString() + ", " + s.toLocaleTimeString();
 
 const enddate = document.querySelector("#enddate");
-const e = new Date(enddate.innerText);
-enddate.innerText = e.toDateString();
+const ed0 = "<%= garagesale.enddate %>";
+const ed1 = ed0.split(" ");
+const ed2 = ed1[0] + ", " + ed1[1] + " " + ed1[2] + ", " + ed1[3] + ", " + ed1[4];
+enddate.innerText = ed2;
+
+const startdateDate = new Date(sd0);
+const enddateDate = new Date(ed0);
+console.log(startdateDate < enddateDate);
+
+// const enddate = document.querySelector("#enddate");
+// const e = new Date(enddate.innerText);
+// enddate.innerText = e.toDateString() + ", " + e.toLocaleTimeString();
 </script>

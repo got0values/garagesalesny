@@ -11,7 +11,7 @@
 <div class="row">
     <h1 class="text-center">Edit Garage Sale</h1>
     <div class="col-md-6 offset-md-3">
-        <form action="/garagesales/<%=garagesale._id%>?_method=PUT" method="post" novalidate class="validated-form">
+        <form action="/garagesales/<%=garagesale._id%>?_method=PUT" method="post" novalidate class="validated-form" enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="title" value="<%= garagesale.title %>" required>
@@ -28,14 +28,14 @@
             </div>
             <div class="form-group row mb-3">
                 <label for="startdate" class="col-2 col-form-label">Starts:</label>
-                <div class="col-10">
-                    <input class="form-control" type="datetime-local" name="startdate"  id="startdate" value="<%= garagesale.startdate %>" required>
+                <div class="col-10">                  
+                    <input class="form-control" type="datetime-local" name="startdate"  id="startdate" value="" required>
                 </div>
             </div>
             <div class="form-group row mb-3">
                 <label for="enddate" class="col-2 col-form-label">Ends:</label>
                 <div class="col-10">
-                    <input class="form-control" type="datetime-local" name="enddate" id="enddate" value="<%= garagesale.enddate %>" required>
+                    <input class="form-control" type="datetime-local" name="enddate" id="enddate" value="" required>
                 </div>
             </div>
             <div class="mb-3">
@@ -46,15 +46,37 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="images" class="form-label">Add Images</label>
-                <% for (let img of garagesale.images) { %>
-                <input class="form-control" type="text" name="images" id="images" value="<%= img.url %>">
-                <% } %>
+                <label for="formFileMultiple" class="form-label">Add Images</label>
+                <input class="form-control" type="file" name="images" id="formFileMultiple" multiple>
+            </div>
+            <div class="mb-3">
+                <% garagesale.images.forEach(function (img, i) { %>
+                    <div class="mb-2">
+                        <img src="<%= img.url %>" id="indImages">
+                        <div class="form-check-inline">
+                            <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+                        </div>
+                        <label for="image-<%= i %>">Delete?</label>
+                    </div>
+                <% }) %>
             </div>            
             <div class="mb-3">
-                <button class="btn btn-info">Update garagesale</button>
+                <button class="btn btn-info">Update Garagesale</button>
             </div>
         </form>
         <a href="/garagesales/<%= garagesale._id %>">Back to garagesale</a>
     </div>
 </div>
+
+<script>
+    const startdatevalue = "<%= garagesale.startdate %>";
+    console.log(startdatevalue);
+    const sdv = new Date(startdatevalue);
+    const sdv2 = sdv.toISOString().split('.')[0];
+    startdate.value = sdv2;
+
+    const enddatevalue = "<%= garagesale.enddate %>";
+    const edv = new Date(enddatevalue);
+    const edv2 = edv.toISOString().split('.')[0];
+    enddate.value = edv2;
+</script>

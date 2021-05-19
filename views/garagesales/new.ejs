@@ -2,7 +2,7 @@
     <div class="row">
         <h1 class="text-center">New Garage Sale</h1>
         <div class="col-md-6 offset-md-3">
-            <form action="/garagesales" method="post">
+            <form action="/garagesales" method="post" novalidate class="validated-form" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label class="form-label" for="title">Title</label>
                     <input class="form-control" type="text" id="title" name="title" required>
@@ -44,7 +44,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="formFileMultiple" class="form-label">Add Images</label>
-                    <input class="form-control" type="text" name="images" id="images">
+                    <input class="form-control" type="file" name="images" id="formFileMultiple" multiple>
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-success">Add Garage Sale</button>

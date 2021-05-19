@@ -9,7 +9,8 @@ module.exports.garagesaleSchema = Joi.object({
     location: Joi.string().required(),
     description: Joi.string().required(),
     startdate: Joi.date().required(),
-    enddate: Joi.date().required()
+    enddate: Joi.date().required(),
+    deleteImages: Joi.array()
 })
 
 module.exports.reviewSchema = Joi.object({

@@ -14,6 +14,7 @@
                     <div class="col-md-8">
                         <div class="card-body">
                             <h5 class="card-title"><%= garagesale.title %></h5>
+                            <p class="card-text"><span id="startdate"><%= garagesale.startdate %></span> - <span id="enddate"><%= garagesale.enddate %></span></p>
                             <p class="card-text"><%= garagesale.description %></p>
                             
                             <a class="btn btn-primary" href="/garagesales/<%= garagesale._id %>">View <%= garagesale.title %></a>
@@ -22,3 +23,17 @@
                 </div>
             </div>
         <% } %>
+
+<script>
+    const startdate = document.querySelectorAll("#startdate");
+    for (let sd of startdate) {
+        const s = new Date(sd.innerText);
+        sd.innerText = s.toDateString();
+    }
+
+    const enddate = document.querySelectorAll("#enddate");
+    for (let ed of enddate) {
+        const e = new Date(ed.innerText);
+        ed.innerText = e.toDateString();
+    }
+</script>
