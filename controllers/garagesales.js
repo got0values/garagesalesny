@@ -1,6 +1,15 @@
+const cities = require('../seed/cities');
 const GarageSale = require('../models/garagesale.js');
 const Review = require('../models/review.js');
 const User = require('../models/user.js');
+
+const NodeGeocoder = require('node-geocoder');
+const geocoder = NodeGeocoder({
+    provider: 'google',
+    httpAdapter: 'https',
+    apiKey: process.env.GEOCODER_API_KEY,
+    formatter: null
+});
 
 //seed garage sale
 module.exports.makegaragesale = async(req, res) => {
@@ -19,7 +28,9 @@ module.exports.makegaragesale = async(req, res) => {
     for (let i = 0; i < 20; i++) {
         const garagesale = new GarageSale({
             title: "Amazing Garage Sale!",
-            location: "Hicksville, NY",
+            location: cities[i].city + ", " + cities[i].state,
+            lat: cities[i].latitude,
+            lng: cities[i].longitude,            
             timestamp: new Date,            
             startdate: '2021-05-17T02:37',
             enddate: '2021-05-20T14:38',
@@ -84,7 +95,20 @@ module.exports.newgaragesale = async(req, res) => {
     }
     gs.images = blobNamesUrls.map(f => ({ url: f.url, filename: f.name })); //map the array to align with renamed gcs files
 
+    //geocoder code - takes inputted location and puts lat and lng into map
+    await geocoder.geocode(garagesale.location, function (err, data) {
+        if(err || !data.length) {
+            console.log(err);
+            req.flash('error', 'Invalid address');
+            return res.redirect('back');
+        }
+        gs.lat = data[0].latitude;
+        gs.lng = data[0].longitude;
+        gs.location = data[0].formattedAddress;
+    });
+
     await gs.save();
+    req.flash('success', 'Successfully added a new garage sale!');
     res.redirect(`/garagesales/${gs._id}`);
 }
 
@@ -144,6 +168,19 @@ module.exports.editgaragesale = async(req, res) => {
     }
     const imgs = blobNamesUrls.map(f => ({ url: f.url, filename: f.name })); //make seperate variable to map an array
     gs.images.push(...imgs); //push the data from the imgs array and spread into campground.images
+
+    //geocoder code - takes inputted location and puts lat and lng into map
+    await geocoder.geocode(garagesale.location, function (err, data) {
+        if(err || !data.length) {
+            console.log(err);
+            req.flash('error', 'Invalid address');
+            return res.redirect('back');
+        }
+        gs.lat = data[0].latitude;
+        gs.lng = data[0].longitude;
+        gs.location = data[0].formattedAddress;
+    });
+
     await gs.save();
 
     //delete images from mongodb and cloud storage
@@ -160,6 +197,7 @@ module.exports.editgaragesale = async(req, res) => {
         console.log(gs);
     }
     
+    req.flash('success', 'Successfully updated garage sale!');
     await res.redirect(`/garagesales/${gs._id}`);
 }
 

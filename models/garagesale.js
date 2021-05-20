@@ -5,6 +5,8 @@ const Review = require('./review');
 const GarageSaleSchema = new Schema({
     title: String,
     location: String,
+    lat: Number,
+    lng: Number,
     timestamp: Date,
     startdate: Date,
     enddate: Date,

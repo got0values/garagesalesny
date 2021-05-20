@@ -105,6 +105,7 @@
 </div>
 
 <script>
+//Date and Time
 const gstimestamp = document.querySelector("#gstimestamp");
 const g = new Date(gstimestamp.innerText);
 gstimestamp.innerText = g.toLocaleString();
@@ -121,14 +122,6 @@ const sd1 = sd0.split(" ");
 const sd2 = sd1[0] + ", " + sd1[1] + " " + sd1[2] + ", " + sd1[3] + ", " + sd1[4];
 startdate.innerText = sd2;
 
-// const startdate = document.querySelector("#startdate");
-// const s0 = "<%= garagesale.startdate %>";
-// console.log(s0);
-// const s = new Date(s0);
-// console.log(s);
-// // const s = new Date(startdate.innerText);
-// startdate.innerText = s.toDateString() + ", " + s.toLocaleTimeString();
-
 const enddate = document.querySelector("#enddate");
 const ed0 = "<%= garagesale.enddate %>";
 const ed1 = ed0.split(" ");
@@ -139,7 +132,31 @@ const startdateDate = new Date(sd0);
 const enddateDate = new Date(ed0);
 console.log(startdateDate < enddateDate);
 
-// const enddate = document.querySelector("#enddate");
-// const e = new Date(enddate.innerText);
-// enddate.innerText = e.toDateString() + ", " + e.toLocaleTimeString();
+//Google Maps
+function initMap() {
+    let lat = parseFloat(`<%= garagesale.lat %>`);
+    let lng = parseFloat(`<%= garagesale.lng %>`);
+    let center = {lat: lat, lng: lng };
+    let map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 8,
+        center: center,
+        scrollwheel: false
+    });
+    let contentString = `
+        <strong><%= garagesale.title %><br />
+        <%= garagesale.location %></strong>
+        <p><%= garagesale.description %></p>
+    `;
+    let infowindow = new google.maps.InfoWindow({
+        content: contentString
+    });
+    let marker = new google.maps.Marker({
+        position: center,
+        map: map
+    });
+    marker.addListener('click', function() {
+        infowindow.open(map, marker);
+    });
+}
 </script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAbiIS9meJVLM8etepoq_nZr-4X39Wbemk&callback=initMap"></script>

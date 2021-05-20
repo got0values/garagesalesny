@@ -1,39 +1,102 @@
-<% layout('layouts/boilerplate') %>
+<% layout('layouts/boilerplate2') %>
+
+        <div class="mb-3" id="mainmap"></div>
+
+        <div class="container mt-5">
         <h1>Garage Sales</h1>
         <div>
             <a href="/garagesales/new">Add Garage Sale</a>
         </div>
-        <% for (let garagesale of garagesales) { %>
+        <% for (let j = 0; j < garagesales.length; j++) { %>
             <div class="card mb-3">
                 <div class="row">
-                    <% if (garagesale.images[0]) { %>
+                    <% if (garagesales[j].images[0]) { %>
                     <div class="col-md-4">
-                        <img class="img-fluid" src="<%= garagesale.images[0].url %>">
+                        <img class="img-fluid" id="image" src="<%= garagesales[j].images[0].url %>">
                     </div>
                     <% } %>
                     <div class="col-md-8">
                         <div class="card-body">
-                            <h5 class="card-title"><%= garagesale.title %></h5>
-                            <p class="card-text"><span id="startdate"><%= garagesale.startdate %></span> - <span id="enddate"><%= garagesale.enddate %></span></p>
-                            <p class="card-text"><%= garagesale.description %></p>
+                            <input type="hidden" id="gsid" value="<%= garagesales[j]._id %>">
+                            <h5 class="card-title" id="gstitle"><span id="gsnum"><%= j + 1 %></span>. <%= garagesales[j].title %></h5>
+                            <p class="card-text" id="gslocation"><%= garagesales[j].location %></p>
+                            <input type="hidden" id="gslat" value="<%= garagesales[j].lat %>">
+                            <input type="hidden" id="gslon" value="<%= garagesales[j].lng %>">
+                            <p class="card-text"><span id="startdate"><%= garagesales[j].startdate %></span> - <span id="enddate"><%= garagesales[j].enddate %></span></p>
+                            <p class="card-text" id="gsdescription"><%= garagesales[j].description %></p>
                             
-                            <a class="btn btn-primary" href="/garagesales/<%= garagesale._id %>">View <%= garagesale.title %></a>
+                            <a class="btn btn-primary" href="/garagesales/<%= garagesales[j]._id %>">View <%= garagesales[j].title %></a>
                         </div>
                     </div>
                 </div>
             </div>
         <% } %>
 
-<script>
-    const startdate = document.querySelectorAll("#startdate");
-    for (let sd of startdate) {
-        const s = new Date(sd.innerText);
-        sd.innerText = s.toDateString();
-    }
+        </div>
 
-    const enddate = document.querySelectorAll("#enddate");
-    for (let ed of enddate) {
-        const e = new Date(ed.innerText);
-        ed.innerText = e.toDateString();
-    }
+<script>
+//format dates
+const startdate = document.querySelectorAll("#startdate");
+for (let sd of startdate) {
+    const s = new Date(sd.innerText);
+    sd.innerText = s.toDateString();
+}
+
+const enddate = document.querySelectorAll("#enddate");
+for (let ed of enddate) {
+    const e = new Date(ed.innerText);
+    ed.innerText = e.toDateString();
+}
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer_compiled.js"></script>
+
+<script>
+function initMainMap() {
+    const image = document.querySelectorAll("#image");
+    const gsnum = document.querySelectorAll("#gsnum");
+    const gsid = document.querySelectorAll("#gsid");
+    const gstitle = document.querySelectorAll("#gstitle");
+    const gslocation = document.querySelectorAll("#gslocation");
+    const gslat = document.querySelectorAll("#gslat");
+    const gslon = document.querySelectorAll("#gslon");
+    const startdate = document.querySelectorAll("#startdate");
+    const enddate = document.querySelectorAll("#enddate");
+    const gsdescription = document.querySelectorAll("#gsdescription");    
+
+    const map = new google.maps.Map(document.getElementById("mainmap"), {
+    zoom: 6,
+    center: { lat: 42.2128, lng:-74.0060 },
+  });
+    const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const splitLabels = labels.split("");
+
+    let locationsContents = [];
+        for (let i = 0; i < gstitle.length; i++ ) {
+            locationsContents.push({
+                location: { lat: parseFloat(gslat[i].value), lng: parseFloat(gslon[i].value) },
+                infowindow: new google.maps.InfoWindow({
+                content: `<a href='garagesales/${gsid[i].value}'>${gstitle[i].innerText}</a><br><img src='${image[i].src}' width='100' height='100'><br>${gsdescription[i].innerText}`}),
+                number: gsnum[i].innerText                
+            })  
+        }
+
+    const markers = locationsContents.map((locations, i) => {
+        const marker = new google.maps.Marker({
+            position: locations.location,
+            label: locations.number
+            // label: splitLabels[i % splitLabels.length]
+        });
+        marker.addListener('click', () => {
+            locations.infowindow.open(map, marker);
+        })  
+        return marker;
+    });
+
+    new MarkerClusterer(map, markers, {
+    imagePath:
+      "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m",
+  });
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNc_S45VuqA_67sKfegaBYVN6onZKmL4g&callback=initMainMap"></script>
