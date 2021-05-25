@@ -19,30 +19,23 @@ module.exports.makegaragesale = async(req, res) => {
     const user = new User({email: 'demo3@email.com', username: 'DEMO'});
     const newUser = await User.register(user, 'DEMOPW');
     const review = new Review({
-        body: "This is great garagesale. Just great!",
+        body: "This is a great garagesale. Just great!",
         rating: 4,
         author: newUser._id,
         timestamp: new Date()        
     });
     await review.save();
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 18; i++) {
         const garagesale = new GarageSale({
-            title: "Amazing Garage Sale!",
+            title: cities[i].title,
             location: cities[i].city + ", " + cities[i].state,
             lat: cities[i].latitude,
             lng: cities[i].longitude,            
             timestamp: new Date,            
-            startdate: '2021-05-17T02:37',
-            enddate: '2021-05-20T14:38',
+            startdate: '2021-08-17T02:37',
+            enddate: '2021-08-20T14:38',
             author: newUser._id,
-            images: [{
-                url: "https://storage.googleapis.com/garagesalesny-images/1621358480213forest.jpg",
-                filename: "1621358480213forest.jpg"
-            },
-            {
-                url: "https://storage.googleapis.com/garagesalesny-images/1621358480213reading.jpg",
-                filename: "1621358480213reading.jpg"
-            }],
+            images: cities[i].images,
             description: "It's a good one",
             reviews: [review._id]
         });

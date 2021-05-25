@@ -21,9 +21,15 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user')
 const userRoutes = require('./routes/users')
+const DB_URL = process.env.GSNY_DB_URL;
+const SESSION_SECRET = process.env.SESSION_SECRET;
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const MongoDBStore = require('connect-mongo');
+const MDBSTORE_SECRET = process.env.MDBSTORE_SECRET;
 
 //connect to the mongodb server
-mongoose.connect('mongodb://localhost:27017/garagesalesny', {
+mongoose.connect(DB_URL, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
@@ -48,12 +54,27 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 //make forms return req.body parsed
 app.use(express.urlencoded({ extended: true }));
+//sanitizes user-supplied data to prevent MongoDB Operator Injection
+app.use(mongoSanitize({
+    replaceWith: '_'
+}));
 //allow update and delete methods
 app.use(methodOverride('_method'));
+
+//connect-mongo-session
+const store = MongoDBStore.create({
+    mongoUrl: DB_URL,
+    secret: SESSION_SECRET,
+    touchAfter: 24 * 60 * 60
+})
+store.on('error', function(e) {
+    console.log("SESSION STORE ERROR", e);
+})
 //configure and enable sessions (server sends and assigns session_id to client, then server can use session_id to store client state) and sign (make sure cookie's integrity hasn't changed) cookies for flash and authentication
 app.use(session({
+    store,
     name: 'session',
-    secret: process.env.SESSION_SECRET,
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -71,6 +92,55 @@ app.use((req, res, next) => {
     res.locals.error = req.flash('error');
     next();
 })
+//helmet configuration
+const scriptSrcUrls = [
+    "https://cdn.jsdelivr.net/",
+    "https://stackpath.bootstrapcdn.com/",
+    "https://kit.fontawesome.com/",
+    "https://cdjns.cloudflare.com/",
+    "https://maps.googleapis.com/",
+    "https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/",    
+];
+const styleSrcUrls = [
+    "https://cdn.jsdelivr.net/",
+    "https://cdnjs.cloudflare.com/",    
+    "https://kit-free.fontawesome.com/",
+    "https://stackpath.bootstrapcdn.com/",
+    "https://fonts.googleapis.com/",
+    "https://use.fontawesome.com/",
+    "https://maps.googleapis.com/"
+];
+const connectSrcUrls = [
+    "https://maps.googleapis.com/maps/api/"
+];
+const fontSrcUrls = [
+    "https://fonts.gstatic.com/"    
+];
+const imgSrcUrls = [
+    "https://maps.gstatic.com/mapfiles/",
+
+]
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: [],
+        connectSrc: ["'self'", ...connectSrcUrls],
+        scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+        styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+        workerSrc: ["'self'", "blob:"],
+        objectSrc: [],
+        imgSrc: [
+            "'self'",
+            "blob:",
+            "data:",
+            "https://maps.gstatic.com/mapfiles/",
+            "https://developers.google.com/maps/documentation/javascript/examples/",
+            "https://maps.googleapis.com/",
+            "https://storage.googleapis.com/garagesalesny-images/",
+            "https://images.unsplash.com/",
+        ],
+        fontSrc: ["'self'", ...fontSrcUrls],
+    },
+}));
 //enable passport for authentication
 app.use(passport.initialize());
 app.use(passport.session());
