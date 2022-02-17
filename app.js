@@ -22,7 +22,7 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user')
 const userRoutes = require('./routes/users')
 const DB_URL = process.env.GSNY_DB_URL;
-const SESSION_SECRET = process.env.SESSION_SECRET;
+// const SESSION_SECRET = process.env.SESSION_SECRET;
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const MongoDBStore = require('connect-mongo');
@@ -64,7 +64,7 @@ app.use(methodOverride('_method'));
 //connect-mongo-session
 const store = MongoDBStore.create({
     mongoUrl: DB_URL,
-    secret: SESSION_SECRET,
+    secret: MDBSTORE_SECRET,
     touchAfter: 24 * 60 * 60
 })
 store.on('error', function(e) {
@@ -74,7 +74,7 @@ store.on('error', function(e) {
 app.use(session({
     store,
     name: 'session',
-    secret: SESSION_SECRET,
+    secret: MDBSTORE_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
